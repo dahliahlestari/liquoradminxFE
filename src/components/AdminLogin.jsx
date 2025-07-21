@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
-import logo from "../assets/log.png";
+import logo from "../assets/log.png"; // kalau tidak dipakai, bisa dihapus
 
 export default function AdminLogin({ onLogin }) {
   const [form, setForm] = useState({ username: "", password: "" });
@@ -16,12 +16,11 @@ export default function AdminLogin({ onLogin }) {
     setError("");
     setLoading(true);
     try {
-      const res = await axios.post(
-        "http://localhost:3000/api/auth/login",
-        form
-      );
+      // PAKAI ENV VITE_API_URL!
+      const apiUrl = import.meta.env.VITE_API_URL;
+      const res = await axios.post(`${apiUrl}/api/auth/login`, form);
       localStorage.setItem("adminToken", res.data.token);
-      onLogin();
+      onLogin && onLogin();
     } catch (err) {
       setError(err.response?.data?.error || "Login gagal!");
     } finally {

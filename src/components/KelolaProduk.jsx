@@ -13,6 +13,9 @@ const kategoriOptions = [
   "Others",
 ];
 
+// Tarik API_URL dari ENV Vite
+const API_URL = import.meta.env.VITE_API_URL;
+
 function LiquorForm({ token, selected, onSuccess, onCancel }) {
   const [form, setForm] = useState({
     nama: selected?.nama || "",
@@ -26,7 +29,7 @@ function LiquorForm({ token, selected, onSuccess, onCancel }) {
     gambar: null,
   });
   const [loading, setLoading] = useState(false);
-  const [fileName, setFileName] = useState(""); // Untuk menampilkan nama file gambar
+  const [fileName, setFileName] = useState("");
   const isEdit = !!selected;
 
   useEffect(() => {
@@ -72,18 +75,14 @@ function LiquorForm({ token, selected, onSuccess, onCancel }) {
 
     try {
       if (isEdit) {
-        await axios.put(
-          `http://localhost:3000/api/liquors/${selected.id}`,
-          fd,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-              Authorization: "Bearer " + token,
-            },
-          }
-        );
+        await axios.put(`${API_URL}/api/liquors/${selected.id}`, fd, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: "Bearer " + token,
+          },
+        });
       } else {
-        await axios.post("http://localhost:3000/api/liquors", fd, {
+        await axios.post(`${API_URL}/api/liquors`, fd, {
           headers: {
             "Content-Type": "multipart/form-data",
             Authorization: "Bearer " + token,
@@ -285,10 +284,11 @@ export default function KelolaProduk({ token }) {
   const [formVisible, setFormVisible] = useState(false);
   const [selected, setSelected] = useState(null);
 
+  // SEMUA endpoint di bawah ini sudah pakai API_URL dari ENV!
   const fetchLiquors = async () => {
     setLoading(true);
     try {
-      const res = await axios.get("http://localhost:3000/api/liquors", {
+      const res = await axios.get(`${API_URL}/api/liquors`, {
         headers: { Authorization: "Bearer " + token },
       });
       setLiquors(res.data);
@@ -312,7 +312,7 @@ export default function KelolaProduk({ token }) {
   const handleDelete = async (id) => {
     if (!window.confirm("Yakin hapus produk ini?")) return;
     try {
-      await axios.delete(`http://localhost:3000/api/liquors/${id}`, {
+      await axios.delete(`${API_URL}/api/liquors/${id}`, {
         headers: { Authorization: "Bearer " + token },
       });
       fetchLiquors();
