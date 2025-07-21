@@ -39,12 +39,6 @@ export default function AdminLayout({ children }) {
         <div>
           {/* Logo & Title */}
           <div className="mb-10 flex items-center gap-3">
-            <img
-              src="/logo.png"
-              alt="Logo"
-              className="w-12 h-12 rounded-xl shadow-lg object-cover"
-              onError={(e) => (e.target.style.display = "none")}
-            />
             <h1 className="font-extrabold text-xl tracking-wide select-none">
               W3Liquor <br />
               <span className="text-yellow-400">Admin</span>
