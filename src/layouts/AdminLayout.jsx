@@ -93,7 +93,9 @@ export default function AdminLayout({ children }) {
                 d="M13 16h-1v-4h-1m1-4h.01M21 12c0 4.418-3.582 8-8 8s-8-3.582-8-8 3.582-8 8-8 8 3.582 8 8z"
               />
             </svg>
-            <span>Halo Admin, semangat kerjanya ❤️</span>
+            <span>
+              Halo Admin, semangat kerjanya ❤️, salam dari ibra xixixi
+            </span>
           </div>
         </div>
       </aside>
