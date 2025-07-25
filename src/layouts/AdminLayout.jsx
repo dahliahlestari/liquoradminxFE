@@ -94,7 +94,7 @@ export default function AdminLayout({ children }) {
               />
             </svg>
             <span>
-              Halo Admin, semangat kerjanya ❤️, salam dari ibra xixixi
+              whisky wine and whatever
             </span>
           </div>
         </div>
