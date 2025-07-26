@@ -8,7 +8,7 @@ const kategoriOptions = [
   "Rum",
   "Tequila",
   "Wine",
-  "Beer",
+  "Cognac",
   "Liqueur",
   "Others",
 ];
