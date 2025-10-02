@@ -1,58 +1,103 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { auth, db } from "./lib/firebase";
+import { doc, getDoc } from "firebase/firestore";
+
 import AdminLogin from "./components/AdminLogin";
 import KelolaProduk from "./components/KelolaProduk";
 import AdminLayout from "./layouts/AdminLayout";
 
+function AdminGuard({ children }) {
+  const [user, loading] = useAuthState(auth);
+  const [isAdmin, setIsAdmin] = useState(null); // null = belum tahu
+
+  useEffect(() => {
+    let alive = true;
+    (async () => {
+      if (!user) {
+        alive && setIsAdmin(false);
+        return;
+      }
+      const snap = await getDoc(doc(db, "admins", user.uid));
+      if (alive) setIsAdmin(snap.exists()); // atau cek role == "admin"
+    })();
+    return () => {
+      alive = false;
+    };
+  }, [user]);
+
+  if (loading || isAdmin === null) {
+    return <div className="p-6">Checking access…</div>;
+  }
+  if (!user) return <Navigate to="/login" replace />;
+  if (!isAdmin)
+    return <div className="p-6 text-red-600">Akses admin diperlukan.</div>;
+  return children;
+}
+
 export default function App() {
-  const [token, setToken] = useState(localStorage.getItem("adminToken"));
-
-  // Fungsi untuk update token dari child (misalnya dari AdminLogin)
-  const handleLogin = () => {
-    setToken(localStorage.getItem("adminToken"));
-  };
-
-  // Fungsi logout
-  const handleLogout = () => {
-    localStorage.removeItem("adminToken");
-    setToken(null);
+  const handleLogout = async () => {
+    await auth.signOut();
   };
 
   return (
     <BrowserRouter>
       <Routes>
-        {/* Route Login */}
+        {/* Login */}
         <Route
           path="/login"
           element={
-            token ? (
-              <Navigate to="/produk" />
-            ) : (
-              <AdminLogin onLogin={handleLogin} />
-            )
+            // kalau sudah login & admin, lempar ke /produk
+            <AuthRedirect>
+              <AdminLogin />
+            </AuthRedirect>
           }
         />
 
-        {/* Route Kelola Produk, dilindungi */}
+        {/* Halaman admin dilindungi */}
         <Route
           path="/produk"
           element={
-            token ? (
+            <AdminGuard>
               <AdminLayout onLogout={handleLogout}>
-                <KelolaProduk token={token} />
+                <KelolaProduk />
               </AdminLayout>
-            ) : (
-              <Navigate to="/login" />
-            )
+            </AdminGuard>
           }
         />
 
-        {/* Redirect ke login kalau route tidak dikenali */}
-        <Route
-          path="*"
-          element={<Navigate to={token ? "/produk" : "/login"} />}
-        />
+        {/* root -> /produk */}
+        <Route path="/" element={<Navigate to="/produk" replace />} />
+
+        {/* fallback */}
+        <Route path="*" element={<Navigate to="/produk" replace />} />
       </Routes>
     </BrowserRouter>
   );
+}
+
+/** Jika user sudah login & admin, redirect dari /login ke /produk */
+function AuthRedirect({ children }) {
+  const [user, loading] = useAuthState(auth);
+  const [isAdmin, setIsAdmin] = useState(null);
+
+  useEffect(() => {
+    let alive = true;
+    (async () => {
+      if (!user) {
+        alive && setIsAdmin(false);
+        return;
+      }
+      const snap = await getDoc(doc(db, "admins", user.uid));
+      if (alive) setIsAdmin(snap.exists());
+    })();
+    return () => {
+      alive = false;
+    };
+  }, [user]);
+
+  if (loading || isAdmin === null) return <div className="p-6">Loading…</div>;
+  if (user && isAdmin) return <Navigate to="/produk" replace />;
+  return children;
 }
