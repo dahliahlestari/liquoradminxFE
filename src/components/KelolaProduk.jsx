@@ -393,8 +393,8 @@ export default function KelolaProduk() {
       {/* TABEL di layar >= md, KARTU di mobile */}
       <div className="rounded-xl shadow-lg bg-white">
         {/* TABLE (md+) */}
-        <div className="hidden md:block overflow-x-auto rounded-xl">
-          <table className="min-w-full border-collapse">
+        <div className="hidden md:block rounded-xl">
+          <table className="min-w-full border-collapse table-auto">
             <thead>
               <tr className="bg-yellow-100">
                 {[
@@ -404,15 +404,13 @@ export default function KelolaProduk() {
                   "Harga",
                   "Diskon",
                   "Stok",
-                  "Deskripsi",
-                  "Rating",
                   "Terjual",
                   "Gambar",
                   "Aksi",
                 ].map((h) => (
                   <th
                     key={h}
-                    className="px-5 py-3 text-left text-sm font-semibold text-yellow-800 border-b border-yellow-200"
+                    className="px-4 py-3 text-left text-sm font-semibold text-yellow-800 border-b border-yellow-200"
                   >
                     {h}
                   </th>
@@ -425,38 +423,34 @@ export default function KelolaProduk() {
                   key={liq.id}
                   className="hover:bg-yellow-50/60 transition-colors"
                 >
-                  <td className="px-5 py-3 font-semibold">{i + 1}</td>
-                  <td className="px-5 py-3">{liq.nama}</td>
-                  <td className="px-5 py-3">{liq.kategori}</td>
-                  <td className="px-5 py-3 font-semibold">
+                  <td className="px-4 py-3 font-semibold">{i + 1}</td>
+                  <td
+                    className="px-4 py-3 max-w-[18rem] truncate"
+                    title={liq.nama}
+                  >
+                    {liq.nama}
+                  </td>
+                  <td className="px-4 py-3">{liq.kategori}</td>
+                  <td className="px-4 py-3 font-semibold">
                     Rp{Number(liq.harga || 0).toLocaleString()}
                   </td>
-                  <td className="px-5 py-3">
+                  <td className="px-4 py-3">
                     {Number(liq.diskon || 0) > 0
                       ? `${parseInt(liq.diskon, 10)}%`
                       : "-"}
                   </td>
-                  <td className="px-5 py-3">{liq.stok ?? 0}</td>
-                  <td
-                    className="px-5 py-3 max-w-xs truncate"
-                    title={liq.deskripsi}
-                  >
-                    {liq.deskripsi}
-                  </td>
-                  <td className="px-5 py-3">
-                    {Number(liq.rating ?? 0).toFixed(1)}
-                  </td>
-                  <td className="px-5 py-3">{liq.sold ?? 0}</td>
-                  <td className="px-5 py-3">
+                  <td className="px-4 py-3">{liq.stok ?? 0}</td>
+                  <td className="px-4 py-3">{liq.sold ?? 0}</td>
+                  <td className="px-4 py-3">
                     {liq.gambar && (
                       <img
                         src={liq.gambar}
                         alt={liq.nama}
-                        className="w-16 h-16 object-cover rounded-md shadow"
+                        className="w-14 h-14 object-cover rounded-md shadow"
                       />
                     )}
                   </td>
-                  <td className="px-5 py-3">
+                  <td className="px-4 py-3">
                     <div className="flex flex-wrap gap-2">
                       <button
                         onClick={() => handleEdit(liq)}
@@ -476,7 +470,7 @@ export default function KelolaProduk() {
               ))}
               {liquors.length === 0 && (
                 <tr>
-                  <td className="p-6 text-center text-gray-500" colSpan={11}>
+                  <td className="p-6 text-center text-gray-500" colSpan={9}>
                     Belum ada produk
                   </td>
                 </tr>
@@ -533,16 +527,9 @@ export default function KelolaProduk() {
                   </div>
                 </div>
 
-                {liq.deskripsi && (
-                  <p className="text-sm text-gray-700 mt-2 line-clamp-2">
-                    {liq.deskripsi}
-                  </p>
-                )}
+                {/* Deskripsi & Rating dihilangkan dari tampilan mobile */}
 
                 <div className="mt-3 flex flex-wrap items-center gap-3 text-xs text-gray-600">
-                  <span className="px-2 py-1 rounded bg-gray-100">
-                    Rating: {Number(liq.rating ?? 0).toFixed(1)}
-                  </span>
                   <span className="px-2 py-1 rounded bg-gray-100">
                     Stok: {liq.stok ?? 0}
                   </span>
